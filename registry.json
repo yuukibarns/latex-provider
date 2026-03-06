@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "id": "latex-provider",
+      "name": "LaTeX Provider",
+      "version": "0.0.1",
+      "official": false,
+      "author": "yuukibarns",
+      "description": "Use LaTeX command to input math symbols",
+      "repository": "https://github.com/yuukibarns/latex-provider",
+      "license": "MIT",
+      "tags": ["Launcher", "LaTeX"],
+    }
+  ]
+}
