@@ -10,7 +10,7 @@ Item {
   property var pluginApi: null
 
   // Provider metadata
-  property string name: "LaTeX"
+  property string name: "LaTeX Symbols"
   property var launcher: null
   property bool handleSearch: false
   property string supportedLayouts: "list"
@@ -21,17 +21,15 @@ Item {
   property bool loaded: false
   property bool loading: false
 
-  // Load database on init
   function init() {
     Logger.i("LatexProvider", "init called");
     if (pluginApi && pluginApi.pluginDir && !loading && !loaded) {
       loading = true;
-      // Assuming database.txt is located in the same directory as this file
+      // Database file: database.txt in the plugin directory
       databaseLoader.path = pluginApi.pluginDir + "/database.txt";
     }
   }
 
-  // File loader for parsing the text-based database
   FileView {
     id: databaseLoader
     path: ""
@@ -45,16 +43,14 @@ Item {
 
         for (let i = 0; i < lines.length; i++) {
           let line = lines[i].trim();
-          // Skip empty lines or comments
           if (line === "" || line.startsWith("#")) continue;
 
           // Split by whitespace: [Symbol] [Command]
-          // Regex \s+ handles tabs or multiple spaces
           const parts = line.split(/\s+/);
           if (parts.length >= 2) {
             parsedData.push({
               symbol: parts[0],
-              cmd: parts.slice(1).join(" ") // The LaTeX command
+              cmd: parts.slice(1).join(" ") // The search keyword
             });
           }
         }
@@ -74,21 +70,17 @@ Item {
     }
   }
 
-  function onOpened() {
-    // Reset state if necessary
-  }
+  function onOpened() {}
 
-  // Check if this provider handles the command
   function handleCommand(searchText) {
     return searchText.startsWith(">latex");
   }
 
-  // Return available commands when user types ">"
   function commands() {
     return [{
       "name": ">latex",
-      "description": "Find LaTeX commands",
-      "icon": "math-function",
+      "description": "Find symbols using LaTeX commands",
+      "icon": "math-symbols",
       "isTablerIcon": true,
       "isImage": false,
       "onActivate": function() {
@@ -97,44 +89,30 @@ Item {
     }];
   }
 
-  // Get search results
   function getResults(searchText) {
-    if (!searchText.startsWith(">latex")) {
-      return [];
-    }
+    if (!searchText.startsWith(">latex")) return [];
 
     if (loading) {
-      return [{
-        "name": "Loading...",
-        "description": "Processing LaTeX database...",
-        "icon": "refresh",
-        "isTablerIcon": true,
-        "isImage": false,
-        "onActivate": function() {}
-      }];
+      return [{ "name": "Loading...", "icon": "refresh", "isTablerIcon": true }];
     }
 
-    // Extract query after ">latex "
     var query = searchText.slice(7).trim().toLowerCase();
     var results = [];
 
-    // If query is empty, show instructions
     if (query === "") {
         return [{
-            "name": "Search LaTeX...",
-            "description": "Type the name of a command (e.g. 'alpha' or 'sum')",
+            "name": "Search Symbols...",
+            "description": "Type a LaTeX command (e.g. 'alpha' to get α)",
             "icon": "search",
-            "isTablerIcon": true,
-            "onActivate": function() {}
+            "isTablerIcon": true
         }];
     }
 
-    // Search Mode: Iterate through database
-    // We only check if the query exists within the LaTeX command string
+    // Search logic: Filter database based on the command string
     for (var i = 0; i < database.length && results.length < 100; i++) {
       var entry = database[i];
       
-      // Strict filter: only search within the command text
+      // We only search for the command
       if (entry.cmd.toLowerCase().indexOf(query) !== -1) {
         results.push(formatLatexEntry(entry));
       }
@@ -143,19 +121,16 @@ Item {
     return results;
   }
 
-  // Format a LaTeX entry for the results list
   function formatLatexEntry(entry) {
     return {
-      "name": entry.cmd,           // Main text: The LaTeX code (e.g. \exclam)
-      "description": entry.symbol, // Subtext: Visual representation (e.g. !)
+      "name": entry.symbol,        // Display the Symbol prominently
+      "description": entry.cmd,    // Show the command underneath to confirm match
       "icon": null,
-      "isImage": false,
       "hideIcon": true, 
       "singleLine": true,
       "onActivate": function() {
-        // Copy the LaTeX command to clipboard
-        // Escape single quotes to prevent shell breakage
-        var escaped = entry.cmd.replace(/'/g, "'\\''");
+        // ACTION: Copy the SYMBOL to clipboard
+        var escaped = entry.symbol.replace(/'/g, "'\\''");
         Quickshell.execDetached(["sh", "-c", "printf '%s' '" + escaped + "' | wl-copy"]);
         launcher.close();
       }
