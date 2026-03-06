@@ -10,7 +10,7 @@
       "description": "Use LaTeX command to input math symbols",
       "repository": "https://github.com/yuukibarns/latex-provider",
       "license": "MIT",
-      "tags": ["Launcher", "LaTeX"],
+      "tags": ["Launcher", "LaTeX"]
     }
   ]
 }
