@@ -1,0 +1,24 @@
+{
+  "id": "latex-provider",
+  "name": "LaTeX Provider",
+  "version": "0.0.1",
+  "description": "Use LaTeX command to input math symbols",
+  "tags": ["Launcher", "LaTeX"],
+  "minNoctaliaVersion": "4.4.1",
+  "author": "yuukibarns",
+  "official": false,
+  "license": "MIT",
+  "repository": "https://github.com/yuukibarns/latex-provider",
+  "entryPoints": {
+    "main": "Main.qml",
+    "launcherProvider": "LauncherProvider.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "commandPrefix": "latex",
+    "defaultSettings": {
+    }
+  }
+}
